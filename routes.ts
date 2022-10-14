@@ -26,6 +26,9 @@ export default function (app: Express) {
     app.get('/mobile/:name/group/:groupName', controllers.MobileController.change_group);
 
     // For frontend
-    app.get('/web/groups', controllers.WebController.get_groups)
-    app.get('/web/devices', controllers.WebController.get_devices)
+    app.get('/web/devices', controllers.WebController.DeviceController.get)
+
+    app.get('/web/groups', controllers.WebController.GroupController.get)
+    app.post('/web/groups', controllers.WebController.GroupController.create)
+    app.delete('/web/groups/:name', controllers.WebController.GroupController.delete)
 }
