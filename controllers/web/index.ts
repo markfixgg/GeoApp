@@ -12,7 +12,7 @@ class WebController {
     }
 
     async get_devices(req: Request, res: Response) {
-        const [ error, devices ] = await to(Device.find({}).exec());
+        const [ error, devices ] = await to(Device.find({}).populate('group').exec());
         if(error) return res.status(500).send({ success: false, error: error.message });
 
         res.send(devices);
