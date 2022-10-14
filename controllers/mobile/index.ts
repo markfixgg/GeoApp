@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { to } from "../../modules";
 import Device from "../../models/Device.model";
 import Group from "../../models/Group.model";
+import moment from "moment";
 
 class MobileController {
     async get (req: Request, res: Response) {
@@ -33,7 +34,7 @@ class MobileController {
         if(!latitude) return res.status(403).send({ success: true, error: "Missing latitude" });
         if(!longitude) return res.status(403).send({ success: true, error: "Missing longitude" });
 
-        const [ error ] = await to(Device.updateOne({ name: req.params.name }, { coordinates: { latitude, longitude, timestamp: new Date() } }).exec());
+        const [ error ] = await to(Device.updateOne({ name: req.params.name }, { coordinates: { latitude, longitude, timestamp: moment().utc().toISOString() } }).exec());
         if (error) return res.send(error.message);
 
         res.send(null);
