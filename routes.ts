@@ -1,16 +1,7 @@
-import { Express, NextFunction, Request, Response } from "express";
+import { Express } from "express";
+import { expressjwt } from "express-jwt";
 import controllers from "./controllers";
 import config from "./config";
-
-const authorization = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers["Authorization"]) return res.status(403).send("Missing auth token");
-    if (req.headers["Authorization"] !== config.authToken) return res.status(403).send("Incorrect token");
-
-    // Temporary solution, basic auth will be implemented
-
-    return next();
-}
-
 export default function (app: Express) {
     app.use((req, res, next) => {
         console.log({ url: req.url, params: req.params, query: req.query })
@@ -26,9 +17,11 @@ export default function (app: Express) {
     app.get('/mobile/:name/group/:groupName', controllers.MobileController.change_group);
 
     // For frontend
-    app.get('/web/devices', controllers.WebController.DeviceController.get)
+    app.post('/web/login', controllers.AuthController.login);
+
+    app.get('/web/devices', expressjwt({ secret: config.JWTSecret, algorithms: ["HS256"] }), controllers.WebController.DeviceController.get)
 
     app.get('/web/groups', controllers.WebController.GroupController.get)
-    app.post('/web/groups', controllers.WebController.GroupController.create)
-    app.delete('/web/groups/:name', controllers.WebController.GroupController.delete)
+    app.post('/web/groups', expressjwt({ secret: config.JWTSecret, algorithms: ["HS256"] }), controllers.WebController.GroupController.create)
+    app.delete('/web/groups/:name', expressjwt({ secret: config.JWTSecret, algorithms: ["HS256"] }), controllers.WebController.GroupController.delete)
 }
